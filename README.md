@@ -33,7 +33,7 @@ Briefs are stored (Vercel Blob when a store is connected, Vercel's runtime cache
 ## Stack
 
 - Next.js 16 (App Router) and React 19, TypeScript, plain CSS
-- Anakin for scraping, Gemini (`gemini-3.6-flash`, with two other Flash models as fallbacks) for extraction
+- Anakin for scraping, Gemini (`gemini-3.6-flash`, with other Flash models as fallbacks when it is busy) for extraction
 - Vercel for hosting, Vercel Blob for storage
 - Atkinson Hyperlegible Next for the interface and Source Serif 4 for quoted text, both self-hosted through Fontsource
 - No UI kit and no database
