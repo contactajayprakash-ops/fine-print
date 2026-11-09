@@ -8,7 +8,9 @@ import { examples } from "@/data/examples";
 import type { Brief } from "./types";
 
 const onBlob = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN);
-const localDir = () => path.join(process.cwd(), ".data");
+// Vercel's filesystem is read-only apart from /tmp, which only lasts as long as the instance does.
+// That is enough to try the app without storage attached, but briefs won't survive for long.
+const localDir = () => (process.env.VERCEL ? "/tmp/fine-print" : path.join(process.cwd(), ".data"));
 
 async function readJson<T>(name: string): Promise<T | null> {
   try {
