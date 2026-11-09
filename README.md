@@ -10,7 +10,7 @@ Paste a link to a hackathon, scholarship or summer program. Fine Print reads the
 
 Every line links back to the exact sentence it came from.
 
-**Live:** _added after first deploy_
+**Live:** https://fine-print-kappa.vercel.app
 
 ## Why I built it
 
@@ -24,7 +24,7 @@ Student opportunities are spread across an overview page, a rules page, an FAQ a
 4. **Check the draft.** This is the part I care about most. `lib/verify.ts` looks for every quote on the page it supposedly came from. Matching is done on words only, so punctuation and markdown don't matter, but the words have to be there in order. A fact with no confirmed quote is deleted. A contradiction needs both of its quotes confirmed. The brief reports how many quotes were checked and how many were thrown out.
 5. **Pin the deadline.** The model copies the time as written and names the zone. The conversion to an absolute time is done in code (`lib/time.ts`), not by the model, and the browser shows it in your zone. A deadline with no zone is flagged automatically.
 
-Briefs are stored (Vercel Blob in production, a local folder in development) so they have a permanent link, and a brief less than a day old is reused instead of scraped again.
+Briefs are stored (Vercel Blob when a store is connected, Vercel's runtime cache otherwise, a local folder in development) so they have a permanent link, and a brief less than a day old is reused instead of scraped again.
 
 ## Sponsor tech
 
@@ -33,7 +33,7 @@ Briefs are stored (Vercel Blob in production, a local folder in development) so 
 ## Stack
 
 - Next.js 16 (App Router) and React 19, TypeScript, plain CSS
-- Anakin for scraping, Gemini (`gemini-3.8-flash`, falling back to older Flash models) for extraction
+- Anakin for scraping, Gemini (`gemini-3.6-flash`, with two other Flash models as fallbacks) for extraction
 - Vercel for hosting, Vercel Blob for storage
 - Atkinson Hyperlegible Next for the interface and Source Serif 4 for quoted text, both self-hosted through Fontsource
 - No UI kit and no database

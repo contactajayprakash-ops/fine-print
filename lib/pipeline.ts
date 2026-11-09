@@ -10,6 +10,9 @@ import { buildBrief } from "./verify";
 
 const EXTRA_PAGES = 7;
 
+/** Bump this when the prompt or the checks change, so briefs made by an older version are redone on request. */
+export const PIPELINE_VERSION = 2;
+
 export function briefId(url: URL): string {
   const key = url.hostname.replace(/^www\./, "") + url.pathname.replace(/\/+$/, "") + url.search;
   const slug = key.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60);
@@ -70,7 +73,7 @@ export async function runScan(start: URL, emit: (e: ScanEvent) => void): Promise
     scannedAt: new Date().toISOString(),
     ...body,
     pages: pages.map((p, i) => ({ url: p.url, title: p.title, chars: scraped[i].markdown.length, ok: true })),
-    stats: { model, quotesChecked: checked, quotesDropped: dropped, seconds: Math.round((Date.now() - began) / 1000) },
+    stats: { version: PIPELINE_VERSION, model, quotesChecked: checked, quotesDropped: dropped, seconds: Math.round((Date.now() - began) / 1000) },
   };
 }
 

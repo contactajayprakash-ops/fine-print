@@ -123,6 +123,7 @@ export interface Brief {
   contact: { email: string; evidence: Evidence[] } | null;
   pages: PageRead[];
   stats: {
+    version?: number;
     model: string;
     quotesChecked: number;
     quotesDropped: number;

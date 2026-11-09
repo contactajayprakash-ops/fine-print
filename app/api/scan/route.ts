@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { isPublicHost, normalizeUrl } from "@/lib/links";
-import { briefId, runScan, ScanError } from "@/lib/pipeline";
+import { briefId, PIPELINE_VERSION, runScan, ScanError } from "@/lib/pipeline";
 import { loadBrief, saveBrief, takeScanSlot } from "@/lib/store";
 import type { ScanEvent } from "@/lib/types";
 
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   const id = briefId(url);
   // A brief less than a day old is reused; pages rarely change faster than that, and scans cost credits.
   const existing = await loadBrief(id);
-  if (existing && Date.now() - Date.parse(existing.scannedAt) < FRESH_FOR_MS) {
+  if (existing && existing.stats.version === PIPELINE_VERSION && Date.now() - Date.parse(existing.scannedAt) < FRESH_FOR_MS) {
     return ndjson(async (emit) => emit({ type: "done", id, cached: true }));
   }
 
