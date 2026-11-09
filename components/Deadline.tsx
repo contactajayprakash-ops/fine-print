@@ -21,12 +21,18 @@ export function Deadline({ when }: { when: WhenInfo }) {
   const written = `${asWritten(when.local, when.hasTime)}${when.zoneText ? ` ${when.zoneText}` : ""}`;
 
   if (!when.utc) {
+    // With no zone we can't name the exact minute, but a day and a half later it has passed everywhere on Earth.
+    const latest = Date.parse(`${when.local.slice(0, 10)}T23:59:00Z`) + 14 * 60 * 60 * 1000;
     return (
       <>
         <p className="answer">{written}</p>
-        <p className="answer-sub">
-          The pages don&rsquo;t give a time zone, so this is the organizer&rsquo;s clock. It may not match yours.
-        </p>
+        {now !== null && now > latest ? (
+          <p className="passed">This deadline has passed.</p>
+        ) : (
+          <p className="answer-sub">
+            The pages don&rsquo;t give a time zone, so this is the organizer&rsquo;s clock. It may not match yours.
+          </p>
+        )}
       </>
     );
   }

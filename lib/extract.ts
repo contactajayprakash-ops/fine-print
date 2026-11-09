@@ -200,7 +200,7 @@ List what the pages list, one row for each thing a winner receives, so an award 
 
 Flags
 A flag is something specific on these pages that the reader should check before spending time or money.
-- contradiction: two passages, on different pages or the same page, that cannot both be true. Typical cases: different deadlines or time zones; a prize called cash in one place and non-cash in another; different eligibility; something required in one place and optional in another; different team sizes or totals. Quote both sides, one quote each, and describe both neutrally. Do not guess which side is right.
+- contradiction: two passages, on different pages or the same page, that cannot both be true. Typical cases: different deadlines or time zones; a prize called cash in one place and non-cash in another; different eligibility; something required in one place and optional in another; different team sizes or totals. Quote both sides, one quote each, and describe both neutrally. Do not guess which side is right. It only counts if someone who followed one statement would break the other. A minimum next to a maximum, a general rule next to its stated exception, or one page simply giving more detail than another is not a contradiction.
 - fee: any payment needed to enter, be judged, attend, or collect an award.
 - rights: terms that hand the organizer ownership of your work, an exclusive or unusually broad licence, or that stop you entering it elsewhere. Permission to showcase submissions is normal; leave it out or mark it low.
 - eligibility: a restriction that is easy to miss and rules out many readers (one country only, nomination needed, and so on).
@@ -231,88 +231,145 @@ export class ModelError extends Error {}
 // Tried in order. The first is the fastest that reads carefully enough; the rest are there for busy moments.
 const MODELS = (process.env.GEMINI_MODEL ?? "gemini-3.6-flash,gemini-3.7-flash,gemini-3.5-flash,gemini-3.8-flash").split(",").map((m) => m.trim()).filter(Boolean);
 
-// The whole scan has to fit inside one serverless request, so a model that stalls is abandoned.
-const ATTEMPT_MS = 80_000;
-const DRAFT_BUDGET_MS = 200_000;
-
 /** Enough deliberation to cross-check the pages, but capped so a scan stays near a minute. */
 function thinkingFor(model: string): Record<string, unknown> {
   return { thinkingLevel: model.includes("3.8") ? "low" : "medium" };
 }
 
-async function ask(model: string, apiKey: string, pagesText: string, today: string, withThinking: boolean, timeoutMs: number): Promise<Response> {
-  return fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-    method: "POST",
-    headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: INSTRUCTIONS }] },
-      contents: [{ role: "user", parts: [{ text: `Today is ${today}.\n\n${pagesText}` }] }],
-      generationConfig: {
-        responseMimeType: "application/json",
-        responseSchema: SCHEMA,
-        temperature: 0.1,
-        maxOutputTokens: 16000,
-        ...(withThinking ? { thinkingConfig: thinkingFor(model) } : {}),
-      },
-    }),
-    cache: "no-store",
-    signal: AbortSignal.timeout(timeoutMs),
-  });
+interface Generated {
+  text: string;
+  model: string;
 }
 
-export async function draftBrief(pages: PageText[], today: string): Promise<{ draft: Draft; model: string }> {
+/**
+ * One request to Gemini with a JSON schema, walking down the model list until one answers.
+ * "Busy" and "slow down" replies are usually over in seconds, so each model gets up to three tries.
+ */
+async function generate(opts: { system: string; user: string; schema: unknown; budgetMs: number; attemptMs: number; thinking: boolean; label: string }): Promise<Generated> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new ModelError("GEMINI_API_KEY is not set");
-
-  const pagesText = renderPages(pages, 240_000);
-  const deadline = Date.now() + DRAFT_BUDGET_MS;
+  const deadline = Date.now() + opts.budgetMs;
   let lastError = "";
 
+  const send = (model: string, withThinking: boolean) =>
+    fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+      method: "POST",
+      headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: opts.system }] },
+        contents: [{ role: "user", parts: [{ text: opts.user }] }],
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: opts.schema,
+          temperature: 0.1,
+          maxOutputTokens: 16000,
+          ...(withThinking ? { thinkingConfig: opts.thinking ? thinkingFor(model) : { thinkingLevel: "low" } } : {}),
+        },
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(Math.max(1000, Math.min(opts.attemptMs, deadline - Date.now()))),
+    });
+
   for (const model of MODELS) {
-    // "Busy" and "slow down" answers are usually over in seconds, so each model gets a second and third try.
     for (let attempt = 0; attempt < 3; attempt++) {
-      const left = deadline - Date.now();
-      if (left < 15_000) throw new ModelError(lastError || "Ran out of time");
+      if (deadline - Date.now() < 5_000) throw new ModelError(lastError || "Ran out of time");
       const began = Date.now();
       const took = () => `${((Date.now() - began) / 1000).toFixed(1)}s`;
       try {
-        let res = await ask(model, apiKey, pagesText, today, true, Math.min(ATTEMPT_MS, left));
+        let res = await send(model, true);
         // Thinking options differ between model generations. If this one rejects ours, ask again without them.
         if (res.status === 400) {
           const why = await res.text();
-          console.warn(`[gemini] ${model} rejected the request (${took()}): ${why.slice(0, 300)}`);
+          console.warn(`[gemini:${opts.label}] ${model} rejected the request (${took()}): ${why.slice(0, 300)}`);
           if (!/thinking/i.test(why)) {
             lastError = `${model}: 400 ${why.slice(0, 200)}`;
             break;
           }
-          res = await ask(model, apiKey, pagesText, today, false, Math.min(ATTEMPT_MS, deadline - Date.now()));
+          res = await send(model, false);
         }
         if (res.status === 429 || res.status === 503) {
           lastError = `${model} is busy (${res.status})`;
-          console.warn(`[gemini] ${lastError}, try ${attempt + 1} (${took()})`);
+          console.warn(`[gemini:${opts.label}] ${lastError}, try ${attempt + 1} (${took()})`);
           await new Promise((r) => setTimeout(r, 2500 * (attempt + 1)));
           continue;
         }
         if (!res.ok) {
           lastError = `${model}: ${res.status} ${(await res.text()).slice(0, 200)}`;
-          console.warn(`[gemini] ${lastError} (${took()})`);
+          console.warn(`[gemini:${opts.label}] ${lastError} (${took()})`);
           break;
         }
         const data = await res.json();
         const text: string = (data?.candidates?.[0]?.content?.parts ?? []).map((p: { text?: string }) => p.text ?? "").join("");
         const usage = data?.usageMetadata;
-        console.log(`[gemini] ${model} answered in ${took()}: ${usage?.promptTokenCount} in, ${usage?.candidatesTokenCount} out, ${usage?.thoughtsTokenCount ?? 0} thinking, finish ${data?.candidates?.[0]?.finishReason}`);
+        console.log(`[gemini:${opts.label}] ${model} answered in ${took()}: ${usage?.promptTokenCount} in, ${usage?.candidatesTokenCount} out, ${usage?.thoughtsTokenCount ?? 0} thinking, finish ${data?.candidates?.[0]?.finishReason}`);
         if (!text) {
           lastError = `${model} returned nothing (${data?.candidates?.[0]?.finishReason ?? "no candidates"})`;
           break;
         }
-        return { draft: JSON.parse(text) as Draft, model };
+        JSON.parse(text);
+        return { text, model };
       } catch (e) {
         lastError = `${model}: ${e instanceof Error ? `${e.name} ${e.message}` : "request failed"}`;
-        console.warn(`[gemini] ${lastError} (${took()})`);
+        console.warn(`[gemini:${opts.label}] ${lastError} (${took()})`);
         break;
       }
     }
   }
   throw new ModelError(lastError || "No model answered");
+}
+
+export async function draftBrief(pages: PageText[], today: string): Promise<{ draft: Draft; model: string }> {
+  const { text, model } = await generate({
+    label: "draft",
+    system: INSTRUCTIONS,
+    user: `Today is ${today}.\n\n${renderPages(pages, 240_000)}`,
+    schema: SCHEMA,
+    budgetMs: 190_000,
+    attemptMs: 80_000,
+    thinking: true,
+  });
+  return { draft: JSON.parse(text) as Draft, model };
+}
+
+export interface Claimed {
+  title: string;
+  a: string;
+  b: string;
+}
+
+const AUDIT = `You are the second reader on a fact-check. For each numbered item you get two passages from the same organizer's website and a claim that they contradict each other.
+
+Decide for each: do the two passages really conflict, so that a person who relied on passage A would be misled about what passage B says?
+- "conflict": both cannot be true as written, or a reasonable reader would get two different answers to the same practical question.
+- "compatible": they can both be true. For example one is a minimum and the other a maximum, one is a general rule and the other its exception, one is more detailed, or they are about different things.
+Judge only from the passages. When unsure, answer "compatible".`;
+
+const AUDIT_SCHEMA = {
+  type: "array",
+  items: {
+    type: "object",
+    properties: {
+      item: { type: "integer" },
+      verdict: { type: "string", enum: ["conflict", "compatible"] },
+    },
+    required: ["item", "verdict"],
+  },
+};
+
+/**
+ * A second, independent look at each claimed contradiction, seeing only the two passages.
+ * Returns one boolean per claim: true if the second reader agrees they conflict.
+ * If the second reader can't be reached, the claims stand (they already have both quotes confirmed).
+ */
+export async function confirmContradictions(claims: Claimed[]): Promise<boolean[]> {
+  if (claims.length === 0) return [];
+  const user = claims.map((c, i) => `Item ${i + 1}\nClaim: ${c.title}\nPassage A: ${c.a}\nPassage B: ${c.b}`).join("\n\n");
+  try {
+    const { text } = await generate({ label: "audit", system: AUDIT, user, schema: AUDIT_SCHEMA, budgetMs: 40_000, attemptMs: 25_000, thinking: false });
+    const verdicts = JSON.parse(text) as { item: number; verdict: string }[];
+    return claims.map((_, i) => verdicts.find((v) => v.item === i + 1)?.verdict !== "compatible");
+  } catch (e) {
+    console.warn(`[gemini:audit] skipped: ${e instanceof Error ? e.message : e}`);
+    return claims.map(() => true);
+  }
 }

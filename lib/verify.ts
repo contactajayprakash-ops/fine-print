@@ -56,7 +56,10 @@ export function buildBrief(draft: Draft, pages: PageText[]): Omit<Brief, "id" | 
     if (!/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?$/.test(local)) return null;
     const ev = confirm(d.evidence);
     if (ev.length === 0) return null;
-    const zoneText = clean(d.zoneText, 40);
+    // A time zone only counts if it is written in the passages quoted for this date.
+    const claimedZone = clean(d.zoneText, 40);
+    const stated = claimedZone && ev.some((e) => e.context.toLowerCase().includes(claimedZone.toLowerCase()));
+    const zoneText = stated ? claimedZone : "";
     const zone = resolveZone(zoneText, clean(d.ianaZone, 60));
     return {
       label: clean(d.label, 80) || "Deadline",

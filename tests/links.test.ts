@@ -36,3 +36,13 @@ test("the same page always gets the same brief id", () => {
   assert.equal(a, b);
   assert.match(a, /^contest-test-apply-[0-9a-f]{6}$/);
 });
+
+test("press releases, blogs and staff pages are left alone even when they mention awards", () => {
+  const start = new URL("https://org.test/programs/summer-institute");
+  const page = `
+    <a href="/programs/summer-institute/application-faqs">FAQ</a>
+    <a href="/newsevents/press-releases/students-earn-top-awards">Students earn awards</a>
+    <a href="/about/leadership">Leadership</a> <a href="/blog/how-to-apply-anywhere">Blog</a>
+    <a href="http://www.org.test/programs/apply">Apply</a> <a href="https://org.test/programs/apply/">Apply now</a>`;
+  assert.deepEqual(pickPages(start, page, [], 7), ["https://org.test/programs/summer-institute/application-faqs", "http://www.org.test/programs/apply"]);
+});

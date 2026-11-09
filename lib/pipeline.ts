@@ -2,7 +2,7 @@
 
 import { createHash } from "node:crypto";
 import { AnakinError, mapSite, scrape, scrapeMany, type ScrapedPage } from "./anakin";
-import { draftBrief, type PageText } from "./extract";
+import { confirmContradictions, draftBrief, type PageText } from "./extract";
 import { pageTitle, pickPages } from "./links";
 import { toBlocks } from "./text";
 import type { Brief, ScanEvent } from "./types";
@@ -11,7 +11,7 @@ import { buildBrief } from "./verify";
 const EXTRA_PAGES = 7;
 
 /** Bump this when the prompt or the checks change, so briefs made by an older version are redone on request. */
-export const PIPELINE_VERSION = 4;
+export const PIPELINE_VERSION = 5;
 
 export function briefId(url: URL): string {
   const key = url.hostname.replace(/^www\./, "") + url.pathname.replace(/\/+$/, "") + url.search;
@@ -67,13 +67,25 @@ export async function runScan(start: URL, emit: (e: ScanEvent) => void): Promise
   emit({ type: "status", message: "Checking every quote against the page it came from" });
   const { checked, dropped, ...body } = buildBrief(draft, pages);
 
+  // Contradictions are the strongest claim the brief makes about someone else's website,
+  // so each one gets a second opinion from a reader who sees only the two passages.
+  const claimed = body.flags.filter((f) => f.type === "contradiction");
+  let overruled = 0;
+  if (claimed.length) {
+    emit({ type: "status", message: claimed.length === 1 ? "Getting a second opinion on one contradiction" : `Getting a second opinion on ${claimed.length} contradictions` });
+    const agreed = await confirmContradictions(claimed.map((f) => ({ title: f.title, a: f.evidence[0].context, b: f.evidence[1].context })));
+    const rejected = new Set(claimed.filter((_, i) => !agreed[i]));
+    overruled = rejected.size;
+    body.flags = body.flags.filter((f) => !rejected.has(f));
+  }
+
   return {
     id: briefId(start),
     url: start.href,
     scannedAt: new Date().toISOString(),
     ...body,
     pages: pages.map((p, i) => ({ url: p.url, title: p.title, chars: scraped[i].markdown.length, ok: true })),
-    stats: { version: PIPELINE_VERSION, model, quotesChecked: checked, quotesDropped: dropped, seconds: Math.round((Date.now() - began) / 1000) },
+    stats: { version: PIPELINE_VERSION, model, quotesChecked: checked, quotesDropped: dropped, contradictionsOverruled: overruled, seconds: Math.round((Date.now() - began) / 1000) },
   };
 }
 

@@ -1,20 +1,25 @@
 // Decide which other pages of a site are worth reading.
 
+// What a page's address or link text has to mention to be worth a scraping credit, and how much.
 const WANTED: [RegExp, number][] = [
-  [/rules?\b|terms|conditions|legal|official/i, 10],
+  [/\brules?\b|terms|conditions|\blegal\b|official/i, 10],
   [/eligib|who-can|requirements?/i, 9],
-  [/faq|questions/i, 8],
-  [/prize|award|reward/i, 7],
-  [/dates?|deadline|schedule|timeline|calendar/i, 6],
-  [/judg|criteria|scoring/i, 6],
-  [/submi|apply|application|how-to/i, 5],
-  [/resources?|guidelines?|details|about|overview|info/i, 4],
-  [/updates?|announce|news/i, 3],
-  [/fees?|cost|tuition|pricing|financial/i, 7],
-  [/privacy|code-of-conduct|conduct/i, 2],
+  [/\bfaqs?\b|frequently|questions/i, 8],
+  [/prizes?\b|awards?\b|rewards?\b|benefits/i, 7],
+  [/fees?\b|\bcosts?\b|tuition|pricing|financial-aid/i, 7],
+  [/dates?\b|deadline|schedule|timeline/i, 6],
+  [/judg|criteria|scoring|selection/i, 6],
+  [/submi|how-to-apply|\bapply\b|application|how-it-works/i, 6],
+  [/guidelines?|details|overview/i, 5],
+  [/resources?|updates?/i, 3],
 ];
 
-const SKIP = /\.(png|jpe?g|gif|svg|webp|css|js|ico|zip|mp4|mov|woff2?)($|\?)|\/(login|signin|sign-in|signup|sign-up|register|cart|checkout|participants|project-gallery|forum_topics|calendar|users|settings|search|tag|category|author|feed|wp-json|cdn-cgi)\b|mailto:|javascript:|tel:/i;
+// Pages that mention those words but are about something else.
+const OFF_TOPIC = /\/(news|newsevents|press|press-releases|blog|gifted-blog|stories|careers|jobs|team|our-team|leadership|staff|board|sponsors?|partners?|alumni|impact|donate|give|contact|privacy|privacy-policy|cookies?|judges|mentors|volunteer|shop|store|events?)(\/|$)/i;
+
+const SKIP = /\.(png|jpe?g|gif|svg|webp|css|js|ico|zip|mp4|mov|woff2?|pdf|docx?)($|\?)|\/(login|signin|sign-in|signup|sign-up|register|cart|checkout|participants|project-gallery|forum_topics|calendar|users|settings|search|tag|category|author|feed|wp-json|cdn-cgi)\b|mailto:|javascript:|tel:/i;
+
+const MIN_SCORE = 5;
 
 export function normalizeUrl(raw: string): URL | null {
   let text = raw.trim();
@@ -45,8 +50,11 @@ function sameSite(a: URL, b: URL): boolean {
   return strip(a.hostname) === strip(b.hostname);
 }
 
+/** One spelling per page, so http/https, www and trailing slashes don't make it look like several. */
 function canonical(url: URL): string {
   const copy = new URL(url.href);
+  copy.protocol = "https:";
+  copy.hostname = copy.hostname.replace(/^www\./, "");
   copy.hash = "";
   for (const p of [...copy.searchParams.keys()]) {
     if (/^(utm_|ref|fbclid|gclid|flow)/i.test(p)) copy.searchParams.delete(p);
@@ -78,12 +86,12 @@ export function anchorsIn(html: string, base: URL): { url: URL; text: string }[]
  * and return the best few. `mapped` comes from Anakin's Map endpoint, `html` from the first page.
  */
 export function pickPages(start: URL, html: string, mapped: string[], limit: number): string[] {
-  const scores = new Map<string, number>();
+  const scores = new Map<string, { score: number; href: string }>();
   const startKey = canonical(start);
   const startDepth = start.pathname.split("/").filter(Boolean).length;
 
   const consider = (url: URL, text: string, bonus: number) => {
-    if (!sameSite(url, start) || SKIP.test(url.href)) return;
+    if (!sameSite(url, start) || SKIP.test(url.href) || OFF_TOPIC.test(url.pathname)) return;
     const k = canonical(url);
     if (k === startKey) return;
     const haystack = decodeURIComponent(url.pathname) + " " + text;
@@ -91,11 +99,12 @@ export function pickPages(start: URL, html: string, mapped: string[], limit: num
     for (const [re, weight] of WANTED) if (re.test(haystack)) score = Math.max(score, weight);
     if (score === 0) return;
     // Prefer pages that live under the address the reader pasted, and shallow ones.
-    if (start.pathname !== "/" && url.pathname.startsWith(start.pathname)) score += 3;
+    const under = start.pathname.replace(/\/$/, "");
+    if (under && url.pathname.startsWith(under + "/")) score += 4;
     const depth = url.pathname.split("/").filter(Boolean).length;
     score -= Math.max(0, depth - startDepth - 1);
     if (url.search) score -= 2;
-    scores.set(k, Math.max(scores.get(k) ?? -Infinity, score + bonus));
+    scores.set(k, { score: Math.max(scores.get(k)?.score ?? -Infinity, score + bonus), href: scores.get(k)?.href ?? url.href.split("#")[0] });
   };
 
   for (const a of anchorsIn(html, start)) consider(a.url, a.text, 1);
@@ -107,11 +116,11 @@ export function pickPages(start: URL, html: string, mapped: string[], limit: num
     }
   }
 
-  return [...scores.entries()]
-    .filter(([, s]) => s > 0)
-    .sort((a, b) => b[1] - a[1] || a[0].length - b[0].length)
+  return [...scores.values()]
+    .filter((s) => s.score >= MIN_SCORE)
+    .sort((a, b) => b.score - a.score || a.href.length - b.href.length)
     .slice(0, limit)
-    .map(([u]) => u);
+    .map((s) => s.href.replace(/\/$/, ""));
 }
 
 export function pageTitle(html: string, fallback: string): string {

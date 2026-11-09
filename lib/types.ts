@@ -127,6 +127,8 @@ export interface Brief {
     model: string;
     quotesChecked: number;
     quotesDropped: number;
+    /** Contradictions the first pass claimed and the second reader did not accept. */
+    contradictionsOverruled?: number;
     seconds: number;
   };
 }

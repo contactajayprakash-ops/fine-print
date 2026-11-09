@@ -345,6 +345,9 @@ export default async function BriefPage({ params }: PageProps<"/b/[id]">) {
               {brief.stats.quotesDropped === 0
                 ? "All of them were found word for word."
                 : `${brief.stats.quotesDropped} could not be found and ${brief.stats.quotesDropped === 1 ? "was" : "were"} removed, along with anything that depended on ${brief.stats.quotesDropped === 1 ? "it" : "them"}.`}{" "}
+              {brief.stats.contradictionsOverruled
+                ? `A second reader looked at each claimed contradiction and threw out ${brief.stats.contradictionsOverruled} that didn\u2019t hold up. `
+                : ""}
               This is a reading aid, not legal advice.
             </p>
           </div>
