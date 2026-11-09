@@ -1,39 +1,52 @@
-// Where finished briefs live. On Vercel that's a private Blob store; on a laptop it's a folder.
-// Example briefs ship with the repo so the site has something to show even with no storage attached.
+// Where finished briefs live. Three places, in order of preference:
+//   1. a private Vercel Blob store, when one is connected (durable)
+//   2. Vercel's runtime cache, when deployed without Blob (shared between instances, kept for 30 days at most)
+//   3. a folder on disk, for local development
+// Example briefs ship with the repo so the site has something to show even when all three are empty.
 
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { get, put } from "@vercel/blob";
+import { getCache } from "@vercel/functions";
 import { examples } from "@/data/examples";
 import type { Brief } from "./types";
 
-const onBlob = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN);
-// Vercel's filesystem is read-only apart from /tmp, which only lasts as long as the instance does.
-// That is enough to try the app without storage attached, but briefs won't survive for long.
-const localDir = () => (process.env.VERCEL ? "/tmp/fine-print" : path.join(process.cwd(), ".data"));
+const backend = () => (process.env.BLOB_READ_WRITE_TOKEN ? "blob" : process.env.VERCEL ? "cache" : "disk");
+const localDir = () => path.join(process.cwd(), ".data");
+const THIRTY_DAYS = 30 * 24 * 60 * 60;
 
 async function readJson<T>(name: string): Promise<T | null> {
   try {
-    if (onBlob()) {
-      const hit = await get(name, { access: "private", useCache: false });
-      if (!hit || hit.statusCode !== 200) return null;
-      return (await new Response(hit.stream).json()) as T;
+    switch (backend()) {
+      case "blob": {
+        const hit = await get(name, { access: "private", useCache: false });
+        if (!hit || hit.statusCode !== 200) return null;
+        return (await new Response(hit.stream).json()) as T;
+      }
+      case "cache":
+        return ((await getCache({ namespace: "fineprint" }).get(name)) as T | null) ?? null;
+      default:
+        return JSON.parse(await readFile(path.join(localDir(), name), "utf8")) as T;
     }
-    return JSON.parse(await readFile(path.join(localDir(), name), "utf8")) as T;
   } catch {
     return null;
   }
 }
 
 async function writeJson(name: string, value: unknown): Promise<void> {
-  const body = JSON.stringify(value);
-  if (onBlob()) {
-    await put(name, body, { access: "private", contentType: "application/json", addRandomSuffix: false, allowOverwrite: true });
-    return;
+  switch (backend()) {
+    case "blob":
+      await put(name, JSON.stringify(value), { access: "private", contentType: "application/json", addRandomSuffix: false, allowOverwrite: true });
+      return;
+    case "cache":
+      await getCache({ namespace: "fineprint" }).set(name, value, { ttl: THIRTY_DAYS, name });
+      return;
+    default: {
+      const file = path.join(localDir(), name);
+      await mkdir(path.dirname(file), { recursive: true });
+      await writeFile(file, JSON.stringify(value));
+    }
   }
-  const file = path.join(localDir(), name);
-  await mkdir(path.dirname(file), { recursive: true });
-  await writeFile(file, body);
 }
 
 export async function loadBrief(id: string): Promise<Brief | null> {
