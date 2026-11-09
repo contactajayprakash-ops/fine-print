@@ -222,48 +222,75 @@ function renderPages(pages: PageText[], budget: number): string {
 
 export class ModelError extends Error {}
 
-const MODELS = (process.env.GEMINI_MODEL ?? "gemini-3.8-flash,gemini-3.5-flash,gemini-2.5-flash").split(",").map((m) => m.trim()).filter(Boolean);
+const MODELS = (process.env.GEMINI_MODEL ?? "gemini-3.8-flash,gemini-3.6-flash,gemini-2.5-flash").split(",").map((m) => m.trim()).filter(Boolean);
+
+// The whole scan has to fit inside one serverless request, so a model that stalls is abandoned.
+const ATTEMPT_MS = 80_000;
+
+/** Reading and quoting needs little deliberation; keeping thinking low makes the call several times faster. */
+function thinkingFor(model: string): Record<string, unknown> {
+  return /gemini-2\.5/.test(model) ? { thinkingBudget: 1024 } : { thinkingLevel: "low" };
+}
+
+async function ask(model: string, apiKey: string, pagesText: string, today: string, withThinking: boolean): Promise<Response> {
+  return fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+    method: "POST",
+    headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: INSTRUCTIONS }] },
+      contents: [{ role: "user", parts: [{ text: `Today is ${today}.\n\n${pagesText}` }] }],
+      generationConfig: {
+        responseMimeType: "application/json",
+        responseSchema: SCHEMA,
+        temperature: 0.1,
+        maxOutputTokens: 16000,
+        ...(withThinking ? { thinkingConfig: thinkingFor(model) } : {}),
+      },
+    }),
+    cache: "no-store",
+    signal: AbortSignal.timeout(ATTEMPT_MS),
+  });
+}
 
 export async function draftBrief(pages: PageText[], today: string): Promise<{ draft: Draft; model: string }> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new ModelError("GEMINI_API_KEY is not set");
 
-  const body = {
-    systemInstruction: { parts: [{ text: INSTRUCTIONS }] },
-    contents: [{ role: "user", parts: [{ text: `Today is ${today}.\n\n${renderPages(pages, 240_000)}` }] }],
-    generationConfig: { responseMimeType: "application/json", responseSchema: SCHEMA, temperature: 0.1 },
-  };
-
+  const pagesText = renderPages(pages, 240_000);
   let lastError = "";
+
   for (const model of MODELS) {
-    for (let attempt = 0; attempt < 2; attempt++) {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-        method: "POST",
-        headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-        cache: "no-store",
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const text: string | undefined = data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("");
-        if (!text) {
-          lastError = `${model} returned nothing (${data?.candidates?.[0]?.finishReason ?? "no candidates"})`;
-          break;
-        }
-        try {
-          return { draft: JSON.parse(text) as Draft, model };
-        } catch {
-          lastError = `${model} returned text that was not JSON`;
+    const began = Date.now();
+    const took = () => `${((Date.now() - began) / 1000).toFixed(1)}s`;
+    try {
+      let res = await ask(model, apiKey, pagesText, today, true);
+      // Thinking options differ between model generations. If this one rejects ours, ask again without them.
+      if (res.status === 400) {
+        const why = await res.text();
+        console.warn(`[gemini] ${model} rejected the request (${took()}): ${why.slice(0, 300)}`);
+        if (!/thinking/i.test(why)) {
+          lastError = `${model}: 400 ${why.slice(0, 200)}`;
           continue;
         }
+        res = await ask(model, apiKey, pagesText, today, false);
       }
-      lastError = `${model}: ${res.status} ${(await res.text()).slice(0, 300)}`;
-      // Busy or rate limited: wait once, then move on to the next model.
-      if (res.status === 429 || res.status >= 500) {
-        await new Promise((r) => setTimeout(r, 4000));
+      if (!res.ok) {
+        lastError = `${model}: ${res.status} ${(await res.text()).slice(0, 200)}`;
+        console.warn(`[gemini] ${lastError} (${took()})`);
         continue;
       }
-      break;
+      const data = await res.json();
+      const text: string = (data?.candidates?.[0]?.content?.parts ?? []).map((p: { text?: string }) => p.text ?? "").join("");
+      const usage = data?.usageMetadata;
+      console.log(`[gemini] ${model} answered in ${took()}: ${usage?.promptTokenCount} in, ${usage?.candidatesTokenCount} out, ${usage?.thoughtsTokenCount ?? 0} thinking, finish ${data?.candidates?.[0]?.finishReason}`);
+      if (!text) {
+        lastError = `${model} returned nothing (${data?.candidates?.[0]?.finishReason ?? "no candidates"})`;
+        continue;
+      }
+      return { draft: JSON.parse(text) as Draft, model };
+    } catch (e) {
+      lastError = `${model}: ${e instanceof Error ? `${e.name} ${e.message}` : "request failed"}`;
+      console.warn(`[gemini] ${lastError} (${took()})`);
     }
   }
   throw new ModelError(lastError || "No model answered");

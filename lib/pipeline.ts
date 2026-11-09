@@ -53,6 +53,7 @@ export async function runScan(start: URL, emit: (e: ScanEvent) => void): Promise
     }
   }
 
+  console.log(`[scan] ${host}: ${scraped.length} pages scraped in ${Math.round((Date.now() - began) / 1000)}s`);
   const pages: PageText[] = scraped.map((p) => ({ url: p.url, title: pageTitle(p.html, p.url), blocks: toBlocks(p.markdown) }));
 
   emit({ type: "status", message: pages.length > 1 ? `Comparing ${pages.length} pages against each other` : "Reading the page closely" });
