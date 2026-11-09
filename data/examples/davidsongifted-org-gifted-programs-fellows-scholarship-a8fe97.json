@@ -1,0 +1,369 @@
+{
+  "id": "davidsongifted-org-gifted-programs-fellows-scholarship-a8fe97",
+  "url": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/",
+  "scannedAt": "2026-11-09T23:53:14.622Z",
+  "title": "Davidson Fellows Scholarship",
+  "organizer": "Davidson Institute",
+  "kind": "scholarship",
+  "summary": "The Davidson Fellows Scholarship awards up to $100,000 to students aged 18 or younger who have completed a significant, graduate-level piece of work in STEM, Humanities, or Outside the Box.",
+  "deadline": {
+    "label": "Receipt of all application materials",
+    "local": "2027-02-17T23:59",
+    "hasTime": true,
+    "zoneText": "Pacific Time",
+    "zone": "America/Los_Angeles",
+    "utc": "2027-02-18T07:59:00.000Z",
+    "evidence": [
+      {
+        "page": 2,
+        "quote": "The deadline for receipt of all application materials is February 17, 2027, 11:59pm Pacific Time.",
+        "context": "The deadline for receipt of all application materials is February 17, 2027, 11:59pm Pacific Time.",
+        "section": "Application Submission & Deadline",
+        "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility/how-to-apply#:~:text=The%20deadline%20for%20receipt,2027%2C%2011%3A59pm%20Pacific%20Time."
+      }
+    ]
+  },
+  "dates": [
+    {
+      "label": "2027 Fellows Scholarship Information Session",
+      "local": "2026-11-12T16:00",
+      "hasTime": true,
+      "zoneText": "Pacific Time",
+      "zone": "America/Los_Angeles",
+      "utc": "2026-11-13T00:00:00.000Z",
+      "evidence": [
+        {
+          "page": 0,
+          "quote": "Join us Thursday, November 12 at 4pm Pacific Time.",
+          "context": "Learn more about application categories, eligibility, project criteria and more! Join us Thursday, November 12 at 4pm Pacific Time.",
+          "section": "2027 Fellows Scholarship Information Session",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/#:~:text=Join%20us%20Thursday%2C%20November%2012%20at%204pm%20Pacific%20Time."
+        }
+      ]
+    },
+    {
+      "label": "Applicant notification date",
+      "local": "2027-07-15",
+      "hasTime": false,
+      "zoneText": "",
+      "zone": null,
+      "utc": null,
+      "evidence": [
+        {
+          "page": 2,
+          "quote": "All applicants are notified on or before July 15 each year.",
+          "context": "All applicants are notified on or before July 15 each year.",
+          "section": "Review Process and Notification",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility/how-to-apply#:~:text=All%20applicants%20are%20notified,July%2015%20each%20year."
+        }
+      ]
+    }
+  ],
+  "eligibility": [
+    {
+      "text": "You must be 18 years old or younger as of the application deadline.",
+      "rule": {
+        "type": "max_age",
+        "value": 18
+      },
+      "evidence": [
+        {
+          "page": 1,
+          "quote": "Be 18 or younger as of the application deadline to be eligible.",
+          "context": "Be 18 or younger as of the application deadline to be eligible.",
+          "section": "Step 1: Eligibility and Deadline",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility#:~:text=Be%2018%20or%20younger,deadline%20to%20be%20eligible."
+        }
+      ]
+    },
+    {
+      "text": "You must be a U.S. citizen residing in the U.S., a Permanent Resident residing in the U.S., or stationed overseas due to active U.S. military duty.",
+      "rule": {
+        "type": "country_only",
+        "countries": [
+          "United States"
+        ]
+      },
+      "evidence": [
+        {
+          "page": 1,
+          "quote": "Be a U.S. citizen residing in the United States, or a Permanent Resident of the United States residing in the United States, or be stationed overseas due to active U.S. military duty.",
+          "context": "Be a U.S. citizen residing in the United States, or a Permanent Resident of the United States residing in the United States, or be stationed overseas due to active U.S. military duty.",
+          "section": "Step 1: Eligibility and Deadline",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility#:~:text=Be%20a%20U.S.%20citizen,active%20U.S.%20military%20duty."
+        }
+      ]
+    },
+    {
+      "text": "Students at any grade level may apply as long as they meet age and project requirements.",
+      "rule": {
+        "type": "school_level",
+        "levels": [
+          "middle_school",
+          "high_school",
+          "undergraduate",
+          "graduate"
+        ]
+      },
+      "evidence": [
+        {
+          "page": 1,
+          "quote": "The Davidson Fellows scholarship eligibility is based on age, not grade level. Students at any grade level are welcome to apply provided they meet our Eligibility and Project Criteria requirements.",
+          "context": "The Davidson Fellows scholarship eligibility is based on age, not grade level. Students at any grade level are welcome to apply provided they meet our Eligibility and Project Criteria requirements.",
+          "section": "Is the Davidson Fellows scholarship for high school seniors only?",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility#:~:text=The%20Davidson%20Fellows%20scholarship,and%20Project%20Criteria%20requirements."
+        }
+      ]
+    }
+  ],
+  "team": {
+    "text": "Solo or teams of up to 2 people",
+    "evidence": [
+      {
+        "page": 1,
+        "quote": "Teams of two are eligible.",
+        "context": "Teams of two are eligible. Both team members must meet eligibility requirements.",
+        "section": "Step 1: Eligibility and Deadline",
+        "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility#:~:text=Teams%20of%20two%20are%20eligible."
+      }
+    ]
+  },
+  "costs": [],
+  "prizes": [
+    {
+      "name": "Davidson Fellow - First Tier",
+      "value": "$100,000 scholarship",
+      "kind": "scholarship",
+      "conditions": "Must be used for qualified tuition and related expenses at an accredited institution within 10 years; split evenly between team members.",
+      "evidence": [
+        {
+          "page": 0,
+          "quote": "We award $100,000, $50,000 and $25,000 scholarships to gifted and high-achieving students, 18 years old or under, who have completed a significant piece of work.",
+          "context": "We award $100,000, $50,000 and $25,000 scholarships to gifted and high-achieving students, 18 years old or under, who have completed a significant piece of work.",
+          "section": "A prestigious scholarship for high-achieving students",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/#:~:text=We%20award%20%24100%2C000%2C%20%2450%2C000,significant%20piece%20of%20work."
+        }
+      ]
+    },
+    {
+      "name": "Davidson Fellow - Second Tier",
+      "value": "$50,000 scholarship",
+      "kind": "scholarship",
+      "conditions": "Must be used for qualified tuition and related expenses at an accredited institution within 10 years; split evenly between team members.",
+      "evidence": [
+        {
+          "page": 0,
+          "quote": "We award $100,000, $50,000 and $25,000 scholarships to gifted and high-achieving students, 18 years old or under, who have completed a significant piece of work.",
+          "context": "We award $100,000, $50,000 and $25,000 scholarships to gifted and high-achieving students, 18 years old or under, who have completed a significant piece of work.",
+          "section": "A prestigious scholarship for high-achieving students",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/#:~:text=We%20award%20%24100%2C000%2C%20%2450%2C000,significant%20piece%20of%20work."
+        }
+      ]
+    },
+    {
+      "name": "Davidson Fellow - Third Tier",
+      "value": "$25,000 scholarship",
+      "kind": "scholarship",
+      "conditions": "Must be used for qualified tuition and related expenses at an accredited institution within 10 years; split evenly between team members.",
+      "evidence": [
+        {
+          "page": 0,
+          "quote": "We award $100,000, $50,000 and $25,000 scholarships to gifted and high-achieving students, 18 years old or under, who have completed a significant piece of work.",
+          "context": "We award $100,000, $50,000 and $25,000 scholarships to gifted and high-achieving students, 18 years old or under, who have completed a significant piece of work.",
+          "section": "A prestigious scholarship for high-achieving students",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/#:~:text=We%20award%20%24100%2C000%2C%20%2450%2C000,significant%20piece%20of%20work."
+        }
+      ]
+    },
+    {
+      "name": "Honorable Mention",
+      "value": "Featured on the Davidson Institute website",
+      "kind": "recognition",
+      "conditions": "",
+      "evidence": [
+        {
+          "page": 1,
+          "quote": "Not every applicant receives an Honorable Mention; they are featured on the Davidson Institute's website.",
+          "context": "The Davidson Fellows Honorable Mention is intended to recognize applicants who have displayed notable potential in their field of study and strongly encourage them to continue pursuing their efforts and talents. Not every applicant receives an Honorable Mention; they are featured on the Davidson Institute's website.",
+          "section": "What is the Honorable Mention recognition?",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility#:~:text=Not%20every%20applicant%20receives,the%20Davidson%20Institute's%20website."
+        }
+      ]
+    }
+  ],
+  "submission": [
+    {
+      "text": "Initial portion describing the project/portfolio for eligibility review",
+      "required": "required",
+      "evidence": [
+        {
+          "page": 2,
+          "quote": "The initial portion asks for a brief description of the project/portfolio to ensure eligibility.",
+          "context": "The application process has two parts! The initial portion asks for a brief description of the project/portfolio to ensure eligibility. The second part of the application is where you input your nominators’ information and send them their forms, as well as submit all the category requirements.",
+          "section": "Application Submission & Deadline",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility/how-to-apply#:~:text=The%20initial%20portion%20asks,project%2Fportfolio%20to%20ensure%20eligibility."
+        }
+      ]
+    },
+    {
+      "text": "Parent approval form(s)",
+      "required": "required",
+      "evidence": [
+        {
+          "page": 2,
+          "quote": "Additionally in part two, you will input a parent’s information and send them their parent approval form(s).",
+          "context": "Additionally in part two, you will input a parent’s information and send them their parent approval form(s). NOTE: only one parent approval form is required. If it is a team submission, one parent form is required per team member.",
+          "section": "Application Submission & Deadline",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility/how-to-apply#:~:text=Additionally%20in%20part%20two%2C,their%20parent%20approval%20form(s)."
+        }
+      ]
+    },
+    {
+      "text": "Category specific requirements and attachments",
+      "required": "required",
+      "evidence": [
+        {
+          "page": 0,
+          "quote": "Every applicant must submit the required elements outlined within their category of choice, plus two nominator forms and all of the Attachments.",
+          "context": "Each category has different requirements. Every applicant must submit the required elements outlined within their category of choice, plus two nominator forms and all of the Attachments. Applicants and their parents also must sign a statement of commitment that, if named a Davidson Fellow, the applicant and a parent or guardian will attend the award reception in Washington, D.C.",
+          "section": "What is required to apply for a Davidson Fellows scholarship?",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/#:~:text=Every%20applicant%20must%20submit,all%20of%20the%20Attachments."
+        }
+      ]
+    }
+  ],
+  "judging": [
+    {
+      "name": "Scope and quality",
+      "detail": "The overall scope and quality of the work submitted.",
+      "evidence": [
+        {
+          "page": 1,
+          "quote": "The scope and quality of the work submitted",
+          "context": "The scope and quality of the work submitted;",
+          "section": "What is the Davidson Fellows scholarship selection based upon?",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility#:~:text=The%20scope%20and%20quality%20of%20the%20work%20submitted"
+        }
+      ]
+    },
+    {
+      "name": "Significance of work",
+      "detail": "The level of significance of the work submitted as evaluated by domain experts.",
+      "evidence": [
+        {
+          "page": 1,
+          "quote": "The level of significance of the work submitted, as deemed by experts in the domain area (or a related domain area)",
+          "context": "The level of significance of the work submitted, as deemed by experts in the domain area (or a related domain area);",
+          "section": "What is the Davidson Fellows scholarship selection based upon?",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility#:~:text=The%20level%20of%20significance,a%20related%20domain%20area)"
+        }
+      ]
+    },
+    {
+      "name": "Depth of knowledge",
+      "detail": "The applicant's depth of knowledge and understanding of the work and field.",
+      "evidence": [
+        {
+          "page": 1,
+          "quote": "The applicant’s depth of knowledge and understanding of the work and the related domain area.",
+          "context": "The applicant’s depth of knowledge and understanding of the work and the related domain area.",
+          "section": "What is the Davidson Fellows scholarship selection based upon?",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility#:~:text=The%20applicant%E2%80%99s%20depth%20of,the%20related%20domain%20area."
+        }
+      ]
+    }
+  ],
+  "flags": [
+    {
+      "type": "eligibility",
+      "severity": "medium",
+      "title": "Winners and a parent must attend an in-person ceremony in Washington, DC",
+      "explanation": "You and a parent or guardian must be able to attend recognition events in Washington, D.C. in September if selected. Travel expenses and lodging are provided by the organizers.",
+      "evidence": [
+        {
+          "page": 1,
+          "quote": "Davidson Fellows must be available to attend, with one parent or guardian, the awards reception and other recognition events to be held in September in Washington, DC.",
+          "context": "Davidson Fellows must be available to attend, with one parent or guardian, the awards reception and other recognition events to be held in September in Washington, DC. (Travel expenses and lodging will be provided by the Institute.)",
+          "section": "Step 1: Eligibility and Deadline",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility#:~:text=Davidson%20Fellows%20must%20be,September%20in%20Washington%2C%20DC."
+        }
+      ]
+    },
+    {
+      "type": "eligibility",
+      "severity": "medium",
+      "title": "Visual arts, live vertebrates, and community service projects are not eligible",
+      "explanation": "Projects in photography, film, visual arts, theater, community service, or research involving live vertebrates are not eligible for submission.",
+      "evidence": [
+        {
+          "page": 1,
+          "quote": "Please note: Projects in the arts including photography, sculpture, film, visual, etc. are not eligible for consideration.",
+          "context": "Please note: Projects in the arts including photography, sculpture, film, visual, etc. are not eligible for consideration.",
+          "section": "Step 2: Review Category Requirements and Project Criteria",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility#:~:text=Please%20note%3A%20Projects%20in,not%20eligible%20for%20consideration."
+        }
+      ]
+    },
+    {
+      "type": "other",
+      "severity": "low",
+      "title": "Google Docs and Google videos are not accepted for submission",
+      "explanation": "You cannot submit files hosted on Google services, such as Google Docs or videos hosted on Google Drive.",
+      "evidence": [
+        {
+          "page": 2,
+          "quote": "GOOGLE PRODUCTS ARE NOT ACCEPTED, THIS INCLUDES GOOGLE DOCS AND VIDEOS.",
+          "context": "GOOGLE PRODUCTS ARE NOT ACCEPTED, THIS INCLUDES GOOGLE DOCS AND VIDEOS.",
+          "section": "Application Submission & Deadline",
+          "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility/how-to-apply#:~:text=GOOGLE%20PRODUCTS%20ARE%20NOT,GOOGLE%20DOCS%20AND%20VIDEOS."
+        }
+      ]
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "What happens if a student's parent or guardian cannot attend the awards reception due to travel or financial constraints?",
+      "why": "Attendance with a parent is explicitly listed as a mandatory eligibility condition."
+    }
+  ],
+  "contact": {
+    "email": "DavidsonFellows@DavidsonGifted.org",
+    "evidence": [
+      {
+        "page": 0,
+        "quote": "If you have any questions, please email DavidsonFellows@DavidsonGifted.org.",
+        "context": "If you have any questions, please email DavidsonFellows@DavidsonGifted.org.",
+        "section": "Do you have additional questions?",
+        "href": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/#:~:text=If%20you%20have%20any%20questions%2C%20please%20email%20DavidsonFellows%40DavidsonGifted.org."
+      }
+    ]
+  },
+  "pages": [
+    {
+      "url": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/",
+      "title": "Scholarships for Gifted Students | Davidson Fellows",
+      "chars": 6799,
+      "ok": true
+    },
+    {
+      "url": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility",
+      "title": "Fellows Scholarship Eligibility | Davidson Institute",
+      "chars": 20363,
+      "ok": true
+    },
+    {
+      "url": "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/eligibility/how-to-apply",
+      "title": "How to Apply for the Davidson Fellows Scholarship",
+      "chars": 9504,
+      "ok": true
+    }
+  ],
+  "stats": {
+    "version": 5,
+    "model": "gemini-3.6-flash",
+    "quotesChecked": 22,
+    "quotesDropped": 1,
+    "contradictionsOverruled": 0,
+    "seconds": 35
+  }
+}
