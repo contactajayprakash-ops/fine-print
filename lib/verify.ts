@@ -83,17 +83,33 @@ export function buildBrief(draft: Draft, pages: PageText[]): Omit<Brief, "id" | 
 
   const deadline = toWhen(draft.deadline);
 
+  // The model is told to name pages, not number them, but "Page 2" still slips through now and then.
+  // The reader never sees page numbers anywhere else, so swap in a name they can recognise.
+  const namePages = (text: string): string =>
+    text.replace(/\b(the )?page (\d+)\b/gi, (whole, _the, n: string, at: number) => {
+      const page = pages[Number(n) - 1];
+      if (!page) return whole;
+      let name = "the main page";
+      try {
+        const path = decodeURIComponent(new URL(page.url).pathname).replace(/\/$/, "");
+        if (Number(n) > 1 && path) name = `the ${path} page`;
+      } catch {
+        // keep the generic name
+      }
+      return at === 0 ? name[0].toUpperCase() + name.slice(1) : name;
+    });
+
   const flags: Flag[] = grounded(draft.flags, (f, ev) => {
     const type = pick<FlagType>(f.type, ["contradiction", "fee", "rights", "eligibility", "deadline", "privacy", "vague", "other"], "other");
     // A contradiction needs both sides on the record.
     if (type === "contradiction" && ev.length < 2) return null;
-    const title = clean(f.title, 120);
+    const title = namePages(clean(f.title, 120));
     if (!title) return null;
     return {
       type,
       severity: pick<Severity>(f.severity, ["high", "medium", "low"], "medium"),
       title,
-      explanation: clean(f.explanation, 500),
+      explanation: namePages(clean(f.explanation, 500)),
       evidence: ev.slice(0, 3),
     };
   }).slice(0, 8);

@@ -66,3 +66,20 @@ test("flags are ordered by severity and junk values fall back safely", () => {
   assert.deepEqual(out.flags.map((f) => [f.type, f.severity]), [["fee", "high"], ["other", "low"]]);
   assert.equal(out.flags[0].evidence[0].section, "Entry");
 });
+
+test("page numbers in a flag are replaced with names the reader can recognise", () => {
+  const out = buildBrief(
+    {
+      ...empty,
+      flags: [
+        {
+          type: "contradiction", severity: "high", title: "Page 1 says no cash, page 2 charges a fee", explanation: "See Page 2 and page 7.",
+          evidence: [{ page: 1, quote: "There are no cash prizes." }, { page: 2, quote: "A $25 entry fee applies to every team." }],
+        },
+      ],
+    },
+    pages,
+  );
+  assert.equal(out.flags[0].title, "The main page says no cash, the /rules page charges a fee");
+  assert.equal(out.flags[0].explanation, "See the /rules page and page 7.");
+});
