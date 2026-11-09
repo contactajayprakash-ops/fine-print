@@ -195,6 +195,9 @@ Dates
 - If the year is missing, work it out from the other dates on the pages.
 - If pages give different deadlines, use the one from the most official page (rules or terms) and raise a contradiction flag.
 
+Prizes
+List what the pages list, one row for each thing a winner receives, so an award with a cash amount and two sponsor perks is three rows. If a prize is described as money anywhere ("$500 in cash"), give it its own row with kind "cash", even when another passage says there is no cash. The disagreement belongs in a flag, not hidden by leaving the row out.
+
 Flags
 A flag is something specific on these pages that the reader should check before spending time or money.
 - contradiction: two passages, on different pages or the same page, that cannot both be true. Typical cases: different deadlines or time zones; a prize called cash in one place and non-cash in another; different eligibility; something required in one place and optional in another; different team sizes or totals. Quote both sides, one quote each, and describe both neutrally. Do not guess which side is right.
@@ -205,12 +208,12 @@ A flag is something specific on these pages that the reader should check before 
 - privacy: unusual collection, sale or forced publication of personal data.
 - vague: a prize or benefit whose value or conditions are unclear ("up to", "valued at", a discount presented as a prize, credits that only work on one platform).
 Severity: high means it could cost you money, your rights or your eligibility, or the pages contradict each other about the deadline, who can enter, or what you win. medium means ask the organizer. low means good to know.
-A flag's title says what is wrong in under 12 words, as a plain statement. Good: "The overview says no cash prizes, then lists prizes in cash". Good: "A demo video is required on one page and optional on another". Bad: "Contradiction regarding cash prizes". Bad: "Eligibility issue".
+A flag's title says what is wrong in under 12 words, as a plain statement. Good: "The FAQ says entry is free, but the rules list a $25 fee". Good: "Applications close March 3 on one page and March 10 on another". Bad: "Contradiction regarding fees". Bad: "Deadline issue".
 Do not flag ordinary things: a code of conduct, disqualification for cheating, "judges' decisions are final", AI-use disclosure. Do not pad the list.
 Before you finish, go through these one at a time and compare every place the pages mention them: the deadline and its time zone; who can enter (age, school level, country); team size; what is required to submit; each prize and whether it is money; any totals; awards or categories named in one place and missing from another.
 
 Open questions
-List what a participant would reasonably need that none of the pages answer (for example: whether the same project may be entered elsewhere, who owns the work, how and when prizes are delivered). Do not repeat a contradiction here; those are already flags.`;
+List what a participant would reasonably need that none of the pages answer at all (for example: whether the same project may be entered elsewhere, who owns the work, how and when prizes are delivered, whether winners need a parent to claim a prize). If a flag already covers a topic, leave it out of this list.`;
 
 function renderPages(pages: PageText[], budget: number): string {
   const per = Math.floor(budget / Math.max(pages.length, 1));
