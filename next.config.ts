@@ -1,9 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  // Briefs are read from storage on every request, so the classic dynamic model is enough here.
+  cacheComponents: false,
 };
 
 export default nextConfig;
