@@ -135,6 +135,7 @@ export interface Brief {
 
 /** Progress messages streamed to the browser while a scan runs. */
 export type ScanEvent =
+  | { type: "started"; id: string }
   | { type: "status"; message: string }
   | { type: "page"; url: string; title: string; chars: number; ok: boolean }
   | { type: "found"; count: number; reading: string[] }

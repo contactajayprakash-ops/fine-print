@@ -30,6 +30,8 @@ export async function POST(request: Request) {
 
   return ndjson(async (emit) => {
     try {
+      // Sent first so the browser knows where the brief will be, even if its connection drops mid-scan.
+      emit({ type: "started", id });
       const brief = await runScan(url, emit);
       await saveBrief(brief);
       emit({ type: "done", id: brief.id, cached: false });
@@ -40,14 +42,30 @@ export async function POST(request: Request) {
   });
 }
 
-/** Stream events to the browser as one JSON object per line. */
+/**
+ * Stream events to the browser as one JSON object per line. A blank line goes out every few seconds
+ * so proxies and phone networks don't close a connection that looks idle while the model is working.
+ */
 function ndjson(run: (emit: (e: ScanEvent) => void) => Promise<void>): Response {
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
-      const emit = (e: ScanEvent) => controller.enqueue(encoder.encode(JSON.stringify(e) + "\n"));
-      await run(emit);
-      controller.close();
+      let open = true;
+      const write = (text: string) => {
+        if (!open) return;
+        try {
+          controller.enqueue(encoder.encode(text));
+        } catch {
+          open = false; // the reader went away; the scan still finishes and is saved
+        }
+      };
+      const heartbeat = setInterval(() => write("\n"), 8000);
+      try {
+        await run((e) => write(JSON.stringify(e) + "\n"));
+      } finally {
+        clearInterval(heartbeat);
+        if (open) controller.close();
+      }
     },
   });
   return new Response(stream, {

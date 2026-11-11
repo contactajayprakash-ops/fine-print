@@ -39,6 +39,30 @@ export function ScanForm({ initialUrl }: { initialUrl: string }) {
     }
   };
 
+  /**
+   * The scan keeps running on the server even if this connection drops (phone networks do that).
+   * So before giving up, check a few times whether the finished brief has turned up.
+   */
+  const waitForBrief = async (id: string): Promise<boolean> => {
+    setLog((l) => [...l, { what: "The connection dropped. Still waiting for the brief" }]);
+    for (let attempt = 0; attempt < 30; attempt++) {
+      await new Promise((r) => setTimeout(r, 5000));
+      try {
+        const res = await fetch(`/api/brief/${id}`, { cache: "no-store" });
+        if (res.ok) {
+          const brief = (await res.json()) as { scannedAt?: string };
+          if (brief.scannedAt && Date.parse(brief.scannedAt) > startedAt.current - 5000) {
+            router.push(`/b/${id}`);
+            return true;
+          }
+        }
+      } catch {
+        // still offline; try again
+      }
+    }
+    return false;
+  };
+
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (busy || !url.trim()) return;
@@ -47,6 +71,7 @@ export function ScanForm({ initialUrl }: { initialUrl: string }) {
     setLog([]);
     startedAt.current = Date.now();
     let finished = false;
+    let briefId = "";
 
     try {
       const res = await fetch("/api/scan", {
@@ -72,13 +97,18 @@ export function ScanForm({ initialUrl }: { initialUrl: string }) {
         for (const line of lines) {
           if (!line.trim()) continue;
           const event = JSON.parse(line) as ScanEvent;
+          if (event.type === "started") briefId = event.id;
           if (event.type === "done" || event.type === "error") finished = true;
           handle(event);
         }
       }
-      if (!finished) setError("The connection dropped before the brief was finished. Try again; pages already read are not charged twice.");
+      if (!finished && !(briefId && (await waitForBrief(briefId)))) {
+        setError("The connection dropped before the brief was finished. Try again in a minute.");
+      }
     } catch {
-      setError("The connection dropped before the brief was finished. Try again in a minute.");
+      if (!(briefId && (await waitForBrief(briefId)))) {
+        setError("The connection dropped before the brief was finished. Try again in a minute.");
+      }
     } finally {
       setBusy(false);
     }
