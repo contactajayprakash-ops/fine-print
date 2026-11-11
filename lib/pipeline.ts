@@ -11,7 +11,7 @@ import { buildBrief } from "./verify";
 const EXTRA_PAGES = 7;
 
 /** Bump this when the prompt or the checks change, so briefs made by an older version are redone on request. */
-export const PIPELINE_VERSION = 5;
+export const PIPELINE_VERSION = 6;
 
 export function briefId(url: URL): string {
   const key = url.hostname.replace(/^www\./, "") + url.pathname.replace(/\/+$/, "") + url.search;
