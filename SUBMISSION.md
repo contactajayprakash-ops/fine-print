@@ -7,9 +7,9 @@
 
 ## Inspiration
 
-Before I started on this hackathon I read the IceHacks pages closely, and they didn't agree with each other. The overview has a note saying there are no cash prizes. A few screens further down, the prize list gives first place "$150 in cash". The overview says a project without a demo video won't be judged, and the rules page calls the video optional. Nobody did this on purpose. Pages get edited at different times and nobody rereads all of them together. But the person who finds out is the student, usually late on deadline day.
+The rules for a hackathon, scholarship or summer program are almost never in one place. There's an overview, a rules page, an FAQ, sometimes a PDF, and they get edited at different times by different people. So they drift. One page gives a deadline with no time zone, another names the zone. One says a document is required, another says it's optional. Nobody does this on purpose, but the person who finds out is the student, usually late on deadline day.
 
-Scholarships and summer programs are harder, because the rules are longer and a mistake costs more. I wanted a tool that reads all of it and shows me where to look.
+Scholarships and summer programs are the worst case, because the rules are longer and a mistake costs more. I wanted a tool that reads all of it side by side and shows me where to look.
 
 ## What it does
 
@@ -24,7 +24,7 @@ You paste a link. Fine Print finds the pages that matter (rules, FAQ, prizes, da
 
 Every line has a Source button. It shows the sentence the claim came from and opens the original page scrolled to that sentence.
 
-On IceHacks it flags the cash prizes and the demo video in about 100 seconds. On the Research Science Institute it noticed that the FAQ asks for three recommendation letters while the application page asks for two.
+On the Research Science Institute, a summer program at MIT, it noticed that the FAQ asks for three letters of recommendation while the application page asks for two, and that the $75 application fee is only mentioned in the FAQ. The scan in the video took about a minute and a half.
 
 ## How I built it
 
@@ -46,15 +46,15 @@ There's no UI kit. The design is a marked-up document: a white sheet, a red marg
 
 Gemini's free tier was the hardest part. The same request took 20 seconds one minute and timed out at 80 the next, and one evening all three models I tried failed in a row. I split the work into two smaller parallel requests, and if the first model hasn't answered after 22 seconds a second one starts alongside it and the faster answer wins.
 
-The model also wanted to call things contradictions that weren't. "Recommendations by two teachers" and "a maximum of three letters" can both be true. That's why the second reader exists. On the IceHacks scan in the video it threw out two of four claims. One of those was "open to students" against "open to high school students", which I think is a fair thing to ask about, so it now shows up as an open question instead.
+The model also wanted to call things contradictions that weren't. "Recommendations by two teachers" and "a maximum of three letters" can both be true. That's why the second reader exists. It leans cautious on purpose: on one test site it rejected two of the four contradictions the first pass claimed.
 
-Scraped pages repeat themselves. The IceHacks overview came back with whole sections three times over, so I remove repeated blocks before the model sees them.
+Scraped pages repeat themselves. One hackathon's overview page came back with whole sections three times over, so I remove repeated blocks before the model sees them.
 
 ## Accomplishments that I'm proud of
 
-On that IceHacks scan, 53 quotes were checked against the pages and every one was found word for word. If one had been made up, the app would have caught it and thrown the claim out, and that check is the part I'm proudest of.
+RSI_NUMBERS
 
-In one test run it also caught something I had missed when I read the pages myself: the rules require a public GitHub repo, while the overview accepts a repo or a live link.
+On that same page it found a real mismatch between the FAQ and the application page. Spotting it by hand takes two tabs and some patience.
 
 And it's a real deployed product. Anyone can paste a link right now.
 

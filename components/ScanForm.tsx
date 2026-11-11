@@ -97,7 +97,7 @@ export function ScanForm({ initialUrl }: { initialUrl: string }) {
             autoComplete="off"
             autoCapitalize="none"
             spellCheck={false}
-            placeholder="https://icehacks.devpost.com"
+            placeholder="https://example.org/summer-program"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             disabled={busy}

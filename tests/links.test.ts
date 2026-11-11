@@ -22,7 +22,7 @@ test("the limit is respected and the starting page is never picked again", () =>
 });
 
 test("addresses are tidied, and private ones refused", () => {
-  assert.equal(normalizeUrl("icehacks.devpost.com/#prizes")?.href, "https://icehacks.devpost.com/");
+  assert.equal(normalizeUrl("contest.devpost.com/#prizes")?.href, "https://contest.devpost.com/");
   assert.equal(normalizeUrl("ftp://x.test"), null);
   assert.equal(normalizeUrl("   "), null);
   assert.equal(isPublicHost(new URL("http://localhost:3000")), false);

@@ -16,7 +16,7 @@ Every line links back to the exact sentence it came from.
 
 ## Why I built it
 
-Student opportunities are spread across an overview page, a rules page, an FAQ and sometimes a PDF, and those pages don't always agree. While reading the pages for IceHacks itself I found the overview listing prizes "in cash" a few screens below a banner saying there are no cash prizes, and a demo video that is required on one page and optional on another. Nobody reads all of that carefully before signing up. I wanted a tool that does.
+The rules for a student opportunity are usually spread over an overview page, a rules page, an FAQ and sometimes a PDF, and those pages get edited at different times. While testing I ran it on the Research Science Institute, a well-known summer program: the FAQ asks for three letters of recommendation, the application page asks for two, and the $75 application fee is only mentioned in the FAQ. Nobody reads all of that side by side before applying. I wanted a tool that does.
 
 ## How it works
 

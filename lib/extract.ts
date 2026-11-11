@@ -205,7 +205,8 @@ const FACTS_TASK = `Your job in this pass: copy down the facts. What it is, the 
 Dates
 - "deadline" is the final moment to submit or apply. Copy the wall-clock time the page gives; do not convert it to another zone.
 - If the year is missing, work it out from the other dates on the pages.
-- If pages give different deadlines, use the one from the most official page (rules or terms).`;
+- If pages give different deadlines, use the one from the most official page (rules or terms).
+- A time zone is often stated on a different page from the date. When that happens, give two quotes: the one with the date and the one that names the zone.`;
 
 const REVIEW_TASK = `Your job in this pass: list the prizes, then look for problems. Someone else is copying down the dates, eligibility and submission steps, but you still need to read them, because that is where pages contradict each other.
 
