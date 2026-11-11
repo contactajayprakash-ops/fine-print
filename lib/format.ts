@@ -65,3 +65,11 @@ export function asWritten(local: string, hasTime: boolean): string {
   const time = new Intl.DateTimeFormat("en-US", { timeZone: "UTC", hour: "numeric", minute: "2-digit" }).format(d);
   return `${date} at ${time}`;
 }
+
+/** The last few words before a quote and the first few after it, cut at word boundaries. */
+export function excerpt(e: Evidence, room: number): { before: string; quote: string; after: string } {
+  const { before, quote, after } = around(e);
+  const lead = before.length > room ? "… " + before.slice(-room).replace(/^\S*\s/, "") : before;
+  const tail = after.length > room ? after.slice(0, room).replace(/\s\S*$/, "") + " …" : after;
+  return { before: lead, quote, after: tail };
+}

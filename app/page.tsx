@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ScanForm } from "@/components/ScanForm";
 import { examples } from "@/data/examples";
-import { around, flagTally, hostOf, KIND_LABEL, pageLabel } from "@/lib/format";
+import { excerpt, flagTally, hostOf, KIND_LABEL, pageLabel } from "@/lib/format";
 import type { Brief, Flag } from "@/lib/types";
 
 /** Pick one real contradiction from the saved examples to show on the front page. */
@@ -44,14 +44,14 @@ export default async function Home({ searchParams }: PageProps<"/">) {
             <div className="main">
               <div className="specimen">
                 {caught.flag.evidence.slice(0, 2).map((e, i) => {
-                  const { before, quote, after } = around(e);
+                  const { before, quote, after } = excerpt(e, 180);
                   return (
                     <figure key={i}>
                       <figcaption>{pageLabel(caught.brief.pages[e.page]?.url ?? caught.brief.url)}</figcaption>
                       <blockquote>
-                        {before.slice(-220)}
+                        {before}
                         <mark>{quote}</mark>
-                        {after.slice(0, 220)}
+                        {after}
                       </blockquote>
                     </figure>
                   );
