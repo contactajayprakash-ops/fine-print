@@ -12,6 +12,8 @@ Every line links back to the exact sentence it came from.
 
 **Live:** https://fine-print-kappa.vercel.app
 
+**Write-up:** [SUBMISSION.md](SUBMISSION.md)
+
 ## Why I built it
 
 Student opportunities are spread across an overview page, a rules page, an FAQ and sometimes a PDF, and those pages don't always agree. While reading the pages for IceHacks itself I found the overview listing prizes "in cash" a few screens below a banner saying there are no cash prizes, and a demo video that is required on one page and optional on another. Nobody reads all of that carefully before signing up. I wanted a tool that does.
@@ -66,7 +68,7 @@ npm run scan -- https://example.com   # one scan from the terminal, prints the b
 
 ## AI use
 
-IceHacks asks entrants to disclose this, so plainly: I built Fine Print with Claude (Anthropic) as a coding assistant, and it wrote most of the code. I chose the idea, directed the work and tested it. The app itself calls Gemini at runtime to read pages. Everything in this repository was started during the hacking period (November 8 to 15, 2026).
+IceHacks asks entrants to disclose this, so plainly: I built Fine Print with Claude (Anthropic) as a coding assistant, and it wrote most of the code. I picked the idea and made the product decisions. The app itself calls Gemini at runtime to read pages. Everything in this repository was started during the hacking period (November 8 to 15, 2026).
 
 ## License
 

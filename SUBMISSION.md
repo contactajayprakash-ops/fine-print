@@ -52,7 +52,7 @@ Scraped pages repeat themselves. The IceHacks overview came back with whole sect
 
 ## Accomplishments that I'm proud of
 
-On that IceHacks scan, 53 quotes were checked against the pages and every one was found word for word. It isn't the model being careful that I'm proud of. It's that the app would have caught it if it weren't.
+On that IceHacks scan, 53 quotes were checked against the pages and every one was found word for word. If one had been made up, the app would have caught it and thrown the claim out, and that check is the part I'm proudest of.
 
 In one test run it also caught something I had missed when I read the pages myself: the rules require a public GitHub repo, while the overview accepts a repo or a live link.
 
